@@ -49,7 +49,7 @@ cd PygameModelling22
 python3 -m venv .\venv
 
 # Activate the virtual environment
-venv\Scripts\activate.bat
+.\venv\Scripts\activate.bat
 ```
 
 7. **Install jupyter notebook**: We collected the tasks and related information into a jupyter notebook. To be able to use it install jupyter inside the virtual environment then open jupyter notebook.
@@ -62,3 +62,30 @@ jupyter notebook
 8. **Open the provided notebook**: Then open the `InstallAndTest.ipynb` from the user interface of jupyter and run the cells in the notebook. This will install all dependencies in your virtual environment and test if the installation was successful. After running the last cell you should see a short simulation of randomly moving agents implemented in pygame. (Note that we suppose you have opened juptyer from the folder of the code base. This is important when you run the cells of the installation notebook)
 
 **At this point you are ready for the workshop! Happy coding!**
+
+### During the Workshop
+1. You will have to start by activating your `venv` you have created during the preparation and start `jupyter` inside.
+On Linux/MacOS:
+```bash
+# Move into the created/cloned directory
+cd path/to/cloned/repo/PygameModelling22
+
+# Activate the virtual environment
+source ./venv/bin/activate
+
+# Start jupyter notebook
+jupyter notebook
+```
+On Windows:
+```bash
+# Move into the newly created/cloned directory
+cd path\to\cloned\repo\PygameModelling22
+
+# Activate the virtual environment
+.\venv\Scripts\activate.bat
+
+# start jupyter notebook
+jupyter notebook
+```
+2. From the user interface of jupyter open the provided notebook `PygameModellingCourseTrack22.ipynb`.
+3. Follow the instructions in the notebook and enjoy the workshop!
