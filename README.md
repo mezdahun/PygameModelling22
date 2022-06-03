@@ -64,8 +64,8 @@ jupyter notebook
 **At this point you are ready for the workshop! Happy coding!**
 
 ### During the Workshop
-1. You will have to start by activating your `venv` you have created during the preparation and start `jupyter` inside.
-2. 
+1. You will have to start by activating your `venv` you have created during the preparation and start `jupyter` inside. Don't forget to replace the path in the command to the path where you have cloned the repo.
+
 On Linux/MacOS:
 ```bash
 # Move into the created/cloned directory
