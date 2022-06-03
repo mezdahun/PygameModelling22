@@ -65,6 +65,7 @@ jupyter notebook
 
 ### During the Workshop
 1. You will have to start by activating your `venv` you have created during the preparation and start `jupyter` inside.
+2. 
 On Linux/MacOS:
 ```bash
 # Move into the created/cloned directory
@@ -76,6 +77,7 @@ source ./venv/bin/activate
 # Start jupyter notebook
 jupyter notebook
 ```
+
 On Windows:
 ```bash
 # Move into the newly created/cloned directory
