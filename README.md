@@ -59,6 +59,6 @@ pip install jupyter
 jupyter notebook
 ```
 
-8. **Open the provided notebook**: Then open Install_Test.ipynb from the user interface of jupyter and run the cells in the notebook. This will install all dependencies in your virtual environment and test if the installation was successful. After running the last cell you should see a short simulation of randomly moving agents implemented in pygame.
+8. **Open the provided notebook**: Then open the `InstallAndTest.ipynb` from the user interface of jupyter and run the cells in the notebook. This will install all dependencies in your virtual environment and test if the installation was successful. After running the last cell you should see a short simulation of randomly moving agents implemented in pygame. (Note that we suppose you have opened juptyer from the folder of the code base. This is important when you run the cells of the installation notebook)
 
 **At this point you are ready for the workshop! Happy coding!**
