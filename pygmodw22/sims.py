@@ -158,6 +158,7 @@ class Simulation:
             # Exit if requested
             if event.type == pygame.QUIT:
                 print('Bye bye!')
+                pygame.quit()
                 sys.exit()
 
             # Change orientation with mouse wheel
