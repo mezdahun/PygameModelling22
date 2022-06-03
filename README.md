@@ -34,6 +34,9 @@ cd PygameModelling22
 # it can happen that you need to use python or python3.x instead of python3 according to
 # your installation where x is your python's minor version
 python3 -m venv ./venv
+
+# Activate the virtual environment
+source ./venv/bin/activate
 ```
 On Windows:
 ```bash
@@ -44,16 +47,8 @@ cd PygameModelling22
 # it can happen that you need to use python or python3.x instead of python3 according to
 # your installation where x is your python's minor version
 python3 -m venv .\venv
-```
 
-
-Activate the virtual environment on Linux/MacOS
-```bash
-source ./venv/bin/activate
-```
-
-Activate virtual environment in Windows
-```bash
+# Activate the virtual environment
 venv\Scripts\activate.bat
 ```
 
