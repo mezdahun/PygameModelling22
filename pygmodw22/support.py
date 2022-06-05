@@ -2,6 +2,7 @@
 calc.py : Supplementary methods and calculations necessary for agents
 """
 import numpy as np
+import matplotlib
 from scipy import integrate
 
 ### Supplementary Parameters ###
@@ -77,3 +78,89 @@ def distance(agent1, agent2):
     c2 = np.array([agent2.position[0] + agent2.radius, agent2.position[1] + agent2.radius])
     distance = np.linalg.norm(c2 - c1)
     return distance
+
+
+def distance_infinite(p1, p2, L=500, dim=2):
+    """ Returns the distance vector of two position vectors x,y
+        by tanking periodic boundary conditions into account.
+
+        Input parameters: L - system size, dim - no. of dimension
+    """
+    distvec = p2 - p1
+    distvec_periodic = np.copy(distvec)
+    distvec_periodic[distvec < -0.5*L] += L
+    distvec_periodic[distvec > 0.5*L] -= L
+    return distvec_periodic
+
+
+def calculate_color(orientation, velocity, max_velocity=1):
+    """Calculates an RGB color from the colormap according to orientation and velocity. Color will be calculated from
+    orientation while transparency from the absolute velocity compared to the max velocity."""
+    cmap = matplotlib.cm.get_cmap('Spectral')
+    rgba = np.array(cmap(orientation / (2*np.pi)))
+    # setting transparency according to vel
+    rgba[3] = velocity/max_velocity
+    # rescaling color for pygame
+    rgba[0:3] *= 255
+    return rgba
+
+
+def SigThresh(x, x0=0.5, steepness=10):
+    """
+    Sigmoid function f(x)=1/2*(tanh(a*(x-x0)+1)
+
+        Input parameters:
+        -----------------
+        x:  function argument
+        x0: position of the transition point (f(x0)=1/2)
+        steepness:  parameter setting the steepness of the transition.
+                    (positive values: transition from 0 to 1, negative values:
+                    transition from 1 to 0)
+    """
+    return 0.5 * (np.tanh(steepness * (x - x0)) + 1)
+
+
+def CalcSingleAttForce(r_att, steepness_att, distvec):
+    """Calculating the attraction force between a single pair of agents with given distance
+    from each other.
+
+    :param r_att: attraction range
+    :param steepness_att: attraction steepness when calculating force with sigmoid
+    :param distvec: distance vector between the paiir of agents
+    :return vec_attr: directional attraction force vector
+    """
+    dist = np.linalg.norm(distvec)
+    F_att = SigThresh(dist, r_att, steepness_att)
+    vec_attr = F_att * distvec
+    return vec_attr
+
+
+def CalcSingleAlgForce(r_alg, steepness_alg, distvec, dvel):
+    """Calculating the attraction force between a single pair of agents with given distance
+        from each other.
+
+        :param r_alg: alignment range
+        :param steepness_alg: alignment steepness when calculating force with sigmoid
+        :param distvec: distance vector between the paiir of agents
+        :param dvec: difference between velcoity vectors
+        :return vec_alg: directional alignment force vector
+        """
+    dist = np.linalg.norm(distvec)
+    F_alg = SigThresh(dist, r_alg, steepness_alg)
+    vec_alg = F_alg * dvel
+    return vec_alg
+
+
+def CalcSingleRepForce(r_rep, steepness_rep, distvec):
+    """Calculating the repulsion force between a single pair of agents with given distance
+    from each other.
+
+    :param r_rep: repulsion range
+    :param steepness_rep: repulsion steepness when calculating force with sigmoid
+    :param distvec: distance vector between the paiir of agents
+    :return vec_rep: directional repulsion force vector
+    """
+    dist = np.linalg.norm(distvec)
+    F_rep = SigThresh(dist, r_rep, steepness_rep)
+    vec_rep = F_rep * distvec
+    return vec_rep

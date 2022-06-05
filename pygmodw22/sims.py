@@ -13,7 +13,7 @@ root_abm_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(
 
 
 class Simulation:
-    def __init__(self, N=10, T=1000, width=600, height=480, framerate=25, window_pad=30, with_visualization=True,
+    def __init__(self, N=10, T=1000, width=500, height=500, framerate=25, window_pad=30, with_visualization=True,
                  agent_radius=10):
         """
         Initializing the main simulation instance
@@ -28,6 +28,7 @@ class Simulation:
         :param agent_radius: radius of the agents
         """
         # Arena parameters
+        self.change_agent_colors = False
         self.WIDTH = width
         self.HEIGHT = height
         self.window_pad = window_pad
@@ -40,6 +41,8 @@ class Simulation:
         self.framerate_orig = framerate
         self.framerate = framerate
         self.is_paused = False
+        self.show_zones = False
+        self.physical_collision_avoidance = True
 
         # Agent parameters
         self.agent_radii = agent_radius
@@ -117,9 +120,9 @@ class Simulation:
                 theta = (atan2(dy, dx) + agent2.orientation) % (np.pi * 2)
 
                 # deciding on turning angle
-                if 0 < theta < np.pi:
+                if 0 <= theta <= np.pi:
                     agent2.orientation -= np.pi / 8
-                elif np.pi < theta < 2 * np.pi:
+                elif np.pi < theta <= 2 * np.pi:
                     agent2.orientation += np.pi / 8
 
                 if agent2.velocity == 1:
@@ -186,6 +189,16 @@ class Simulation:
             if event.type == pygame.KEYDOWN and event.key == pygame.K_d:
                 self.framerate = self.framerate_orig
 
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_v:
+                # Showing zone boundaries around agents
+                self.show_zones = not self.show_zones
+
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_c:
+                # Showing agent orientations with fill colors
+                self.change_agent_colors = not self.change_agent_colors
+                for ag in self.agents:
+                    ag.change_color_with_orientation = self.change_agent_colors
+
             # Continuous mouse events (move with cursor)
             if pygame.mouse.get_pressed()[0]:
                 try:
@@ -204,9 +217,25 @@ class Simulation:
         """Drawing environment, agents and every other visualization in each timestep"""
         self.screen.fill(support.BACKGROUND)
         self.draw_walls()
+        if self.show_zones:
+            self.draw_agent_zones()
         self.agents.draw(self.screen)
         self.draw_framerate()
         self.draw_agent_stats()
+
+    def draw_agent_zones(self):
+        for agent in self.agents:
+            image = pygame.Surface([self.WIDTH + self.window_pad, self.HEIGHT + self.window_pad])
+            image.fill(support.BACKGROUND)
+            image.set_colorkey(support.BACKGROUND)
+            image.set_alpha(30)
+            cx, cy, r = agent.position[0] + agent.radius, agent.position[1] + agent.radius, agent.r_att
+            pygame.draw.circle(image, support.GREEN, (cx, cy), r, width=3)
+            cx, cy, r = agent.position[0] + agent.radius, agent.position[1] + agent.radius, agent.r_rep
+            pygame.draw.circle(image, support.RED, (cx, cy), r, width=3)
+            cx, cy, r = agent.position[0] + agent.radius, agent.position[1] + agent.radius, agent.r_alg
+            pygame.draw.circle(image, support.YELLOW, (cx, cy), r, width=3)
+            self.screen.blit(image, (0, 0))
 
     def start(self):
 
@@ -227,20 +256,21 @@ class Simulation:
 
             if not self.is_paused:
 
-                # ------ AGENT-AGENT INTERACTION ------
-                # Check if any 2 agents has been collided and reflect them from each other if so
-                collision_group_aa = pygame.sprite.groupcollide(
-                    self.agents,
-                    self.agents,
-                    False,
-                    False,
-                    within_group_collision
-                )
-                collided_agents = []
-                # Carry out agent-agent collisions and collecting collided agents for later (according to parameters
-                # such as ghost mode, or teleportation)
-                for agent1, agent2 in collision_group_aa.items():
-                    self.agent_agent_collision(agent1, agent2)
+                if self.physical_collision_avoidance:
+                    # ------ AGENT-AGENT INTERACTION ------
+                    # Check if any 2 agents has been collided and reflect them from each other if so
+                    collision_group_aa = pygame.sprite.groupcollide(
+                        self.agents,
+                        self.agents,
+                        False,
+                        False,
+                        within_group_collision
+                    )
+                    collided_agents = []
+                    # Carry out agent-agent collisions and collecting collided agents for later (according to parameters
+                    # such as ghost mode, or teleportation)
+                    for agent1, agent2 in collision_group_aa.items():
+                        self.agent_agent_collision(agent1, agent2)
 
                 # Update agents according to current visible obstacles
                 self.agents.update(self.agents)
