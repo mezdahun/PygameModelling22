@@ -231,12 +231,15 @@ class Simulation:
             image.fill(support.BACKGROUND)
             image.set_colorkey(support.BACKGROUND)
             image.set_alpha(30)
-            cx, cy, r = agent.position[0] + agent.radius, agent.position[1] + agent.radius, agent.r_att
-            pygame.draw.circle(image, support.GREEN, (cx, cy), r, width=3)
-            cx, cy, r = agent.position[0] + agent.radius, agent.position[1] + agent.radius, agent.r_rep
-            pygame.draw.circle(image, support.RED, (cx, cy), r, width=3)
-            cx, cy, r = agent.position[0] + agent.radius, agent.position[1] + agent.radius, agent.r_alg
-            pygame.draw.circle(image, support.YELLOW, (cx, cy), r, width=3)
+            if agent.s_att != 0:
+                cx, cy, r = agent.position[0] + agent.radius, agent.position[1] + agent.radius, agent.r_att
+                pygame.draw.circle(image, support.GREEN, (cx, cy), r, width=3)
+            if agent.s_rep != 0:
+                cx, cy, r = agent.position[0] + agent.radius, agent.position[1] + agent.radius, agent.r_rep
+                pygame.draw.circle(image, support.RED, (cx, cy), r, width=3)
+            if agent.s_alg != 0:
+                cx, cy, r = agent.position[0] + agent.radius, agent.position[1] + agent.radius, agent.r_alg
+                pygame.draw.circle(image, support.YELLOW, (cx, cy), r, width=3)
             self.screen.blit(image, (0, 0))
 
     def start(self):

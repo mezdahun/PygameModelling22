@@ -60,7 +60,8 @@ class Agent(pygame.sprite.Sprite):
         self.radius = radius
         self.position = np.array(position, dtype=np.float64)
         self.orientation = orientation
-        self.color = color
+        self.orig_color = color
+        self.color = self.orig_color
         self.selected_color = support.LIGHT_BLUE
         self.show_stats = False
         self.change_color_with_orientation = False
@@ -210,7 +211,7 @@ class Agent(pygame.sprite.Sprite):
         if self.change_color_with_orientation:
             self.change_color()
         else:
-            self.color = support.BLUE
+            self.color = self.orig_color
 
         # update surface according to new orientation
         # creating visualization surface for agent as a filled circle
