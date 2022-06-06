@@ -40,13 +40,13 @@ class Agent(pygame.sprite.Sprite):
 
         # Interaction ranges (Zones)
         # Attraction
-        self.steepness_att = -20
+        self.steepness_att = -0.5
         self.r_att = 250
         # Repulsion
-        self.steepness_rep = -20
+        self.steepness_rep = -0.5
         self.r_rep = 50
         # Alignment
-        self.steepness_alg = -20
+        self.steepness_alg = -0.5
         self.r_alg = 150
 
         self.dt = 0.01
@@ -54,7 +54,7 @@ class Agent(pygame.sprite.Sprite):
         # Boundary conditions
         # bounce_back: agents bouncing back from walls as particles
         # infinite: agents continue moving in both x and y direction and teleported to other side
-        self.boundary = "bounce_back"
+        self.boundary = "infinite"
 
         self.id = id
         self.radius = radius
@@ -67,6 +67,7 @@ class Agent(pygame.sprite.Sprite):
 
         # Non-initialisable private attributes
         self.velocity = 1  # agent absolute velocity
+        self.v_max = 1  # maximum velocity of agent
 
         # Interaction
         self.is_moved_with_cursor = 0
@@ -302,11 +303,11 @@ class Agent(pygame.sprite.Sprite):
         if self.orientation > np.pi * 2:
             self.orientation = self.orientation - 2 * np.pi
 
-    def prove_velocity(self, velocity_limit=1):
+    def prove_velocity(self):
         """Restricting the absolute velocity of the agent"""
         vel_sign = np.sign(self.velocity)
         if vel_sign == 0:
             vel_sign = +1
-        if np.abs(self.velocity) > velocity_limit:
+        if np.abs(self.velocity) > self.v_max:
             # stopping agent if too fast during exploration
-            self.velocity = velocity_limit
+            self.velocity = self.v_max

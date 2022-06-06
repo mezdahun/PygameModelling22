@@ -42,7 +42,7 @@ class Simulation:
         self.framerate = framerate
         self.is_paused = False
         self.show_zones = False
-        self.physical_collision_avoidance = True
+        self.physical_collision_avoidance = False
 
         # Agent parameters
         self.agent_radii = agent_radius
@@ -52,6 +52,8 @@ class Simulation:
 
         # pygame related class attributes
         self.agents = pygame.sprite.Group()
+        # Creating N agents in the environment
+        self.create_agents()
         self.screen = pygame.display.set_mode([self.WIDTH + 2 * self.window_pad, self.HEIGHT + 2 * self.window_pad])
         self.clock = pygame.time.Clock()
 
@@ -189,7 +191,7 @@ class Simulation:
             if event.type == pygame.KEYDOWN and event.key == pygame.K_d:
                 self.framerate = self.framerate_orig
 
-            if event.type == pygame.KEYDOWN and event.key == pygame.K_v:
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_z:
                 # Showing zone boundaries around agents
                 self.show_zones = not self.show_zones
 
@@ -241,10 +243,6 @@ class Simulation:
 
         start_time = datetime.now()
         print(f"Running simulation start method!")
-
-        # Creating N agents in the environment
-        print("Creating agents!")
-        self.create_agents()
 
         print("Starting main simulation loop!")
         # Main Simulation loop until dedicated simulation time

@@ -2,7 +2,7 @@
 calc.py : Supplementary methods and calculations necessary for agents
 """
 import numpy as np
-import matplotlib
+import matplotlib.cm
 from scipy import integrate
 
 ### Supplementary Parameters ###
