@@ -14,7 +14,7 @@ root_abm_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(
 
 class Simulation:
     def __init__(self, N=10, T=1000, width=500, height=500, framerate=25, window_pad=30, with_visualization=True,
-                 agent_radius=10):
+                 agent_radius=10, physical_obstacle_avoidance=False):
         """
         Initializing the main simulation instance
         :param N: number of agents
@@ -26,6 +26,7 @@ class Simulation:
         :param with_visualization: turns visualization on or off. For large batch autmatic simulation should be off so
             that we can use a higher/maximal framerate.
         :param agent_radius: radius of the agents
+        :param physical_obstacle_avoidance: obstacle avoidance based on pygame sprite collision groups
         """
         # Arena parameters
         self.change_agent_colors = False
@@ -42,7 +43,7 @@ class Simulation:
         self.framerate = framerate
         self.is_paused = False
         self.show_zones = False
-        self.physical_collision_avoidance = False
+        self.physical_collision_avoidance = physical_obstacle_avoidance
 
         # Agent parameters
         self.agent_radii = agent_radius
@@ -127,10 +128,10 @@ class Simulation:
                 elif np.pi < theta <= 2 * np.pi:
                     agent2.orientation += np.pi / 8
 
-                if agent2.velocity == 1:
+                if agent2.velocity == agent2.v_max:
                     agent2.velocity += 0.5
                 else:
-                    agent2.velocity = 1
+                    agent2.velocity = agent2.v_max
 
     def add_new_agent(self, id, x, y, orient):
         """Adding a single new agent into agent sprites"""
@@ -273,6 +274,10 @@ class Simulation:
                     for agent1, agent2 in collision_group_aa.items():
                         self.agent_agent_collision(agent1, agent2)
 
+                # Updating force on all agents
+                for agent in self.agents:
+                    agent.update_forces(self.agents)
+
                 # Update agents according to current visible obstacles
                 self.agents.update(self.agents)
 
@@ -285,9 +290,9 @@ class Simulation:
                 pygame.display.flip()
 
             # Moving time forward
-            if self.t % 100 == 0 or self.t == 1:
-                print(f"{datetime.now().strftime('%Y-%m-%d_%H-%M-%S.%f')} t={self.t}")
-                print(f"Simulation FPS: {self.clock.get_fps()}")
+            # if self.t % 100 == 0 or self.t == 1:
+            #     print(f"{datetime.now().strftime('%Y-%m-%d_%H-%M-%S.%f')} t={self.t}")
+            #     print(f"Simulation FPS: {self.clock.get_fps()}")
             self.clock.tick(self.framerate)
 
         end_time = datetime.now()

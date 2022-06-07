@@ -49,7 +49,10 @@ class Agent(pygame.sprite.Sprite):
         self.steepness_alg = -0.5
         self.r_alg = 150
 
-        self.dt = 0.01
+        # Noise
+        self.noise_sig = 0.1
+
+        self.dt = 0.05
 
         # Boundary conditions
         # bounce_back: agents bouncing back from walls as particles
@@ -113,12 +116,8 @@ class Agent(pygame.sprite.Sprite):
         else:
             self.is_moved_with_cursor = 0
 
-    def update(self, agents):
-        """
-        main update method of the agent. This method is called in every timestep to calculate the new state/position
-        of the agent and visualize it in the environment
-        :param agents: a list of all other agents in the environment.
-        """
+    def update_forces(self, agents):
+        """Updateing overall social forces on agent according to velocity and distance of others"""
         # CALCULATING change in velocity and orientation in the current timestep
         # vel, theta = support.random_walk()
         # center point
@@ -164,7 +163,7 @@ class Agent(pygame.sprite.Sprite):
 
         force_total = self.s_att * vec_attr_total - self.s_rep * vec_rep_total + self.s_alg * vec_alg_total
 
-        vel = np.linalg.norm(force_total)
+        vel = self.v_max * np.linalg.norm(force_total)
         closed_angle = support.angle_between(heading_vec, force_total)
         closed_angle = (closed_angle % (2 * np.pi))
         # at this point closed angle between 0 and 2pi, but we need it between -pi and pi
@@ -178,11 +177,26 @@ class Agent(pygame.sprite.Sprite):
         else:
             theta = 0
 
+        # Adding directional noise
+        if self.noise_sig > 0.0:
+            noiseP = np.random.normal(0.0, self.noise_sig, size=1)
+            theta += noiseP[0]
+
+        self.dtheta = theta
+        self.dv = vel
+
+    def update(self, agents):
+        """
+        main update method of the agent. This method is called in every timestep to calculate the new state/position
+        of the agent and visualize it in the environment
+        :param agents: a list of all other agents in the environment.
+        """
+
         if not self.is_moved_with_cursor:  # we freeze agents when we move them
             # # updating agent's state variables according to calculated vel and theta
-            self.orientation += self.dt * theta
+            self.orientation += self.dt * self.dtheta
             self.prove_orientation()  # bounding orientation into 0 and 2pi
-            self.velocity += self.dt * vel
+            self.velocity += self.dt * self.dv
             self.prove_velocity()  # possibly bounding velocity of agent
 
             # updating agent's position
@@ -294,8 +308,6 @@ class Agent(pygame.sprite.Sprite):
                 self.position[1] = self.boundaries_y[1] - self.radius
             elif y > self.boundaries_y[1]:
                 self.position[1] = self.boundaries_y[0] + self.radius
-
-
 
     def prove_orientation(self):
         """Restricting orientation angle between 0 and 2 pi"""
