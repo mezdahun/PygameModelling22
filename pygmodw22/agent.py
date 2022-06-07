@@ -52,6 +52,11 @@ class Agent(pygame.sprite.Sprite):
         # Noise
         self.noise_sig = 0.1
 
+        # agent types
+        self.type = "prey"
+        self.escape_radius = 200
+        self.predation_radius = 200
+
         self.dt = 0.05
 
         # Boundary conditions
@@ -117,7 +122,7 @@ class Agent(pygame.sprite.Sprite):
             self.is_moved_with_cursor = 0
 
     def update_forces(self, agents):
-        """Updateing overall social forces on agent according to velocity and distance of others"""
+        """Updating overall social forces on agent according to velocity and distance of others"""
         # CALCULATING change in velocity and orientation in the current timestep
         # vel, theta = support.random_walk()
         # center point
@@ -157,9 +162,21 @@ class Agent(pygame.sprite.Sprite):
                 dvel = ag_vel - s_vel
 
                 # Calculating interaction forces
-                vec_attr_total += support.CalcSingleAttForce(self.r_att, self.steepness_att, distvec)
-                vec_rep_total += support.CalcSingleRepForce(self.r_rep, self.steepness_rep, distvec)
-                vec_alg_total += support.CalcSingleAlgForce(self.r_alg, self.steepness_alg, distvec, dvel)
+                if self.type == "prey" and ag.type == "prey":
+                    # prey-prey interaction
+                    vec_attr_total += support.CalcSingleAttForce(self.r_att, self.steepness_att, distvec)
+                    vec_rep_total += support.CalcSingleRepForce(self.r_rep, self.steepness_rep, distvec)
+                    vec_alg_total += support.CalcSingleAlgForce(self.r_alg, self.steepness_alg, distvec, dvel)
+                if self.type == "predator" and ag.type == "prey":
+                    # predator-prey interaction (follow)
+                    vec_attr_total += support.CalcSingleAttForce(self.predation_radius, -1, distvec)
+                    vec_rep_total += 0
+                    vec_alg_total += 0
+                if self.type == "prey" and ag.type == "predator":
+                    # prey predator interaction (escape)
+                    vec_attr_total += 0
+                    vec_rep_total += support.CalcSingleRepForce(self.escape_radius, -1, distvec)
+                    vec_alg_total += 0
 
         force_total = self.s_att * vec_attr_total - self.s_rep * vec_rep_total + self.s_alg * vec_alg_total
 

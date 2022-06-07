@@ -114,24 +114,31 @@ class Simulation:
         for i, agent2 in enumerate(agents2):
             do_collision = True
             if do_collision:
-                # overriding any mode with collision
-                x1, y1 = agent1.position
-                x2, y2 = agent2.position
-                dx = x2 - x1
-                dy = y2 - y1
-                # calculating relative closed angle to agent2 orientation
-                theta = (atan2(dy, dx) + agent2.orientation) % (np.pi * 2)
+                if agent1.type == "prey" and agent2.type == "prey":
+                    # overriding any mode with collision
+                    x1, y1 = agent1.position
+                    x2, y2 = agent2.position
+                    dx = x2 - x1
+                    dy = y2 - y1
+                    # calculating relative closed angle to agent2 orientation
+                    theta = (atan2(dy, dx) + agent2.orientation) % (np.pi * 2)
 
-                # deciding on turning angle
-                if 0 <= theta <= np.pi:
-                    agent2.orientation -= np.pi / 8
-                elif np.pi < theta <= 2 * np.pi:
-                    agent2.orientation += np.pi / 8
+                    # deciding on turning angle
+                    if 0 <= theta <= np.pi:
+                        agent2.orientation -= np.pi / 8
+                    elif np.pi < theta <= 2 * np.pi:
+                        agent2.orientation += np.pi / 8
 
-                if agent2.velocity == agent2.v_max:
-                    agent2.velocity += 0.5
+                    if agent2.velocity == agent2.v_max:
+                        agent2.velocity += 0.5
+                    else:
+                        agent2.velocity = agent2.v_max
+                elif agent1.type == "predator":
+                    agent2.kill()
+                    print('RAAAWR a prey has been eaten!')
                 else:
-                    agent2.velocity = agent2.v_max
+                    agent1.kill()
+                    print('RAAAWR a prey has been eaten!')
 
     def add_new_agent(self, id, x, y, orient):
         """Adding a single new agent into agent sprites"""
