@@ -35,6 +35,12 @@ cd PygameModelling22
 # your installation where x is your python's minor version
 python3 -m venv ./venv
 
+# Note: On Debian/Ubuntu systems you may receive an error message stating that you need 
+# to install the python3-venv package in order to be able to create the environment. 
+# In this case, executing 'sudo apt install python3.X-venv' with X indicating your 
+# Python's minor version, should resolve the issue. 
+
+
 # Activate the virtual environment
 source ./venv/bin/activate
 ```
