@@ -160,6 +160,21 @@ class Simulation:
 
     def interact_with_event(self, events):
         """Carry out functionality according to user's interaction"""
+
+        # Moving agents with left-right keys in case no mouse is available
+        try:
+            keys = pygame.key.get_pressed()  # checking pressed keys
+
+            if keys[pygame.K_LEFT]:
+                for ag in self.agents:
+                    ag.move_with_mouse(pygame.mouse.get_pos(), 1, 0)
+
+            if keys[pygame.K_RIGHT]:
+                for ag in self.agents:
+                    ag.move_with_mouse(pygame.mouse.get_pos(), 0, 1)
+        except:
+            pass
+
         for event in events:
             # Exit if requested
             if event.type == pygame.QUIT:
